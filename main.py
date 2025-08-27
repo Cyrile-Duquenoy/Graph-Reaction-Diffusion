@@ -28,14 +28,14 @@ if __name__ == '__main__':
     e3 = Edge(extremity=[v1,v3], ids=3, coeff=dk)
     
     '''Construction d'un graphe étoilé'''
-    G = Graph([v1, v2, v3], [e1, e2,e3])
+    G = Graph([v1, v2, v3], [e1, e2, e3])
     print(G, '\n')
     
 
     '''
     Choisir si on travaille sur le graphe 1 ou 2
     '''
-    lap = G.get_laplacian_matrix()
+    lap = G.get_normal_laplacian_matrix()
     print('laplacien : ',lap, '\n')
     
     
@@ -151,17 +151,17 @@ if __name__ == '__main__':
     
     v1 = Vertex(ids=1, value=1.0)
     v2 = Vertex(ids=2, value=1.0)
-    v3 = Vertex(ids=3, value=1.0)
+    v3 = Vertex(ids=3, value=2.0)
     
     e1 = Edge(extremity=[v1, v2], ids=1, coeff=dk)
     e2 = Edge(extremity=[v2, v3], ids=2, coeff=dk)
     e3 = Edge(extremity=[v1,v3], ids=3, coeff=dk)
     
     vertices = [v1, v2, v3]
-    edges = [e1, e2, e3]
+    edges = [e1, e2]
     
     '''Construction d'un graphe étoilé'''
-    G = Graph([v1, v2, v3], [e1, e2, e3])
+    G = Graph([v1, v2, v3], [e1, e2])
     print(G, '\n')
     '''Pour un graphe en chaine : utiliser le grpahe ci dessous'''
     # G = Graph([v1, v2, v3], [e1, e2])
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     u = [vertex.value for vertex in vertices]
 
     # Pas sûr si la formulation de la divergence est bonne (c.f. classe Graphe)
-    c = np.array([0.1, 0.5, 0.5])
+    c = np.array([5, 0.5, 0.5])
     
     
     div = G.get_div_matrix(u, c)
@@ -182,6 +182,7 @@ if __name__ == '__main__':
     S_list = []  # masse totale
     V_list = []
     VV_list = []
+    UU_list = []
     
     # iteration en temps
     
@@ -193,6 +194,7 @@ if __name__ == '__main__':
         u = u + dt * (- D @ lap @ u + div)
     
         U_list.append(np.linalg.norm(u))
+        UU_list.append(u.copy())
         S_list.append(np.sum(u))
         
         # Stockage des variations instantanées
@@ -247,7 +249,23 @@ if __name__ == '__main__':
     # Affichage final des valeurs de u
     print("u final :", u)
     print("Masse totale :", np.sum(u))
-     
+    
+    
+    # --- Animation ---
+    fig10, ax10 = plt.subplots(figsize=(6,4))
+    bar_container10 = ax10.bar(range(len(u)), UU_list[0], tick_label=[f"v{i+1}" for i in range(len(u))])
+    ax10.set_ylim(0, max([max(u_t) for u_t in UU_list]) * 1.1)
+    ax10.set_ylabel("Valeur de u")
+    ax10.set_xlabel("Noeuds")
+    ax10.set_title("Évolution de u sur les noeuds en reaction + diffusion")
+    
+    def update(frame):
+        for rect, h in zip(bar_container10, UU_list[frame]):
+            rect.set_height(h)
+        return bar_container10
+    
+    anim10 = FuncAnimation(fig10, update, frames=len(UU_list), interval=100, blit=False)
+    plt.show()
     
     
     
