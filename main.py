@@ -21,21 +21,22 @@ if __name__ == '__main__':
     
     v1 = Vertex(ids=1, value=1.0)
     v2 = Vertex(ids=2, value=1.0)
-    v3 = Vertex(ids=3, value=3.0)
+    v3 = Vertex(ids=3, value=2.0)
     
     e1 = Edge(extremity=[v1, v2], ids=1, coeff=dk)
     e2 = Edge(extremity=[v2, v3], ids=2, coeff=dk)
     e3 = Edge(extremity=[v1,v3], ids=3, coeff=dk)
     
     '''Construction d'un graphe étoilé'''
-    G = Graph([v1, v2, v3], [e1, e2, e3])
+    G = Graph([v1, v2, v3], [e1, e2,e3])
     print(G, '\n')
     
 
     '''
     Choisir si on travaille sur le graphe 1 ou 2
     '''
-    lap = G.get_normal_laplacian_matrix()
+    lap = G.get_laplacian_matrix()
+    print('laplacien : ',lap, '\n')
     
     
     # Liste de noeuds et d'arrêtes
@@ -45,9 +46,15 @@ if __name__ == '__main__':
     u = [vertex.value for vertex in vertices]
     
     # Conservation de la masse en stationnaire
-    v = lap @ u
-    print('Solution stationnaire : ', v, '\n')
-    print('Conservation de la masse en stationnaire : ', sum(v), '\n')
+    '''
+    On cherche le vecteur propre associé à la valeur propre nulle
+    '''
+    eigvals, eigvecs = np.linalg.eig(lap)
+    idx = np.argmin(np.abs(eigvals))
+    stationnaire = eigvecs[:, idx].real
+    stationnaire *= sum(u) / sum(stationnaire)
+    print('Solution stationnaire : ', stationnaire, '\n')
+    print('Conservation de la masse en stationnaire : ', sum(stationnaire), '\n')
     
     
 #%% Diffusion Pure
