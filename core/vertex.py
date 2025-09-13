@@ -12,10 +12,11 @@ class Vertex:
     
     def __repr__(self):
         return self.__str__()
-    
+
 if __name__ == '__main__':
     v1 = Vertex(ids = 1)
     print(v1)
     v1.value = 0.5
     print(v1)
+    
 

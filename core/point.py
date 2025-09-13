@@ -13,7 +13,10 @@ class Point:
             self.coord = [x, y, z]
         
     def __str__(self):
-        return f'Point(x={self.x},y={self.x},z={self.z})'
+        if self.z is not None:
+            return f'Point(x={self.x},y={self.x},z={self.z})'
+        else:
+            return f'Point(x={self.x},y={self.x})'
     
     def dist(self, p:'Point'):
         res = 0
@@ -25,5 +28,6 @@ class Point:
 if __name__ == '__main__':
     p1 = Point(0,0,1)
     print(p1)
-    p2 = Point(0,0,4)
+    p2 = Point(0,0,1)
     print(p1.dist(p2))
+    print(p2.coord)

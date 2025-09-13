@@ -16,7 +16,6 @@ M = 100
 dt = 1 / (M - 1)
 t = np.linspace(0,T,M)
 
-
 if __name__ == '__main__':
     
     v1 = Vertex(ids=1, value=1.0)
@@ -29,14 +28,22 @@ if __name__ == '__main__':
     
     '''Construction d'un graphe étoilé'''
     G = Graph([v1, v2, v3], [e1, e2, e3])
-    print(G, '\n')
     
+    print(G, '\n')
 
     '''
     Choisir si on travaille sur le graphe 1 ou 2
     '''
     lap = G.get_normal_laplacian_matrix()
     print('laplacien : ',lap, '\n')
+    
+    A = G.get_adjacency_matrix()
+    print("Adj : ", A, '\n')
+    
+    B = lap
+    for i in range(6):
+        B = B @ lap
+        print(B, '\n')
     
     
     # Liste de noeuds et d'arrêtes
@@ -139,6 +146,39 @@ if __name__ == '__main__':
     anim = FuncAnimation(fig, animate, frames=len(U_over_time), interval=50, blit=False)
     plt.show()
     
+    
+    
+
+#%% Analyse spectrale (Graph Fourier Transform)
+
+    # Décomposition spectrale du Laplacien
+    eigvals, eigvecs = np.linalg.eigh(lap)
+    
+    # Préparation du graphe de Fourier initial
+    u_hat0 = eigvecs.T @ U_over_time[0]
+    
+    fig_spec, ax_spec = plt.subplots(figsize=(6,4))
+    bars_spec = ax_spec.bar(range(len(u_hat0)), np.abs(u_hat0), 
+                            tick_label=[f"{round(ev,2)}" for ev in eigvals])
+    ax_spec.set_ylim(0, max([np.max(np.abs(eigvecs.T @ u_t)) for u_t in U_over_time]) * 1.1)
+    ax_spec.set_xlabel("Fréquences (valeurs propres λ)")
+    ax_spec.set_ylabel("|û(λ)|")
+    ax_spec.set_title("Évolution spectrale (GFT)")
+    
+    
+    def animate_spec(frame):
+        u_t = U_over_time[frame]
+        u_hat = eigvecs.T @ u_t
+        for bar, height in zip(bars_spec, np.abs(u_hat)):
+            bar.set_height(height)
+        return bars_spec
+    
+    anim_spec = FuncAnimation(fig_spec, animate_spec, 
+                              frames=len(U_over_time), interval=80, blit=False)
+    
+    plt.show()
+
+
     
 #%% Reaction-Diffusion type Keller-Segel
     
@@ -267,8 +307,4 @@ if __name__ == '__main__':
     anim10 = FuncAnimation(fig10, update, frames=len(UU_list), interval=100, blit=False)
     plt.show()
     
-    
-    
-    
-    
-    
+
