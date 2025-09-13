@@ -5,7 +5,7 @@ from .edge import Edge
 from .vertex import Vertex
 
 class Graph:
-    def __init__(self, vertices: np.ndarray, edges: np.ndarray):
+    def __init__(self, vertices: [Vertex], edges: [Edge]):
         self._vertices = vertices if vertices is not None else np.array([])
         self._edges = edges if edges is not None else []
 
@@ -89,8 +89,6 @@ class Graph:
         normalized_laplacian = I - D_inv_sqrt @ adjacency @ D_inv_sqrt
         
         return normalized_laplacian
-    
-
     
     '''
     def get_div_matrix(self):
