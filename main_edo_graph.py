@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
 from core.Cell.cell import Cell, Neuron, Astrocyte, Microglia
 from core.point import Point
 from core.cellgraph import CellGraph
@@ -65,12 +67,6 @@ for step in range(M):
     U_over_time.append(u.copy())
 
 # Animation / Visualisation
-# (tu peux réutiliser ta fonction d’animation ici)
-
-
-
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 fig, ax = plt.subplots(figsize=(6, 6))
 
